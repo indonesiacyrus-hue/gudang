@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www/html
+    environment:
+      - DB_HOST=db
+      - DB_USER=root
+      - DB_PASS=root
+      - DB_NAME=unindra
+      - BASE_URL=http://localhost:8080/
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8.0
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=unindra
+    volumes:
+      - db_data:/var/lib/mysql
+      # Seeder / Migration otomatis saat docker baru dibuat di laptop lain:
+      - ./unindra.sql:/docker-entrypoint-initdb.d/init.sql
+
+volumes:
+  db_data:
